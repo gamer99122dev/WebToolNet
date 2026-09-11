@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <!-- 舊程式碼沒有 null 標註，開了會多幾百個警告，要用的檔案自己加 #nullable enable -->
+    <Nullable>disable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- WebHelper 需要 ASP.NET Core 的 HttpContext (不是 NuGet，不會多帶檔案) -->
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- System.Data.SqlClient 已不在 .NET 內建，改用這個 -->
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="7.0.2" />
+    <!-- Windows DPAPI (ProtectedData)，DbSecret 用來加密正式站連線字串 -->
+    <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="10.0.10" />
+  </ItemGroup>
+
+</Project>
