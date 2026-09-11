@@ -8,6 +8,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <!-- Templates 是給新網站複製用的範本，不是 library 的程式碼，不要編進來 -->
+    <Compile Remove="Templates\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <!-- WebHelper 需要 ASP.NET Core 的 HttpContext (不是 NuGet，不會多帶檔案) -->
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>

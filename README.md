@@ -2,7 +2,6 @@
 
 公司 HIS 網站共用的 .NET 10 類別庫，從 .NET Framework 版搬過來。各網站以 Project Reference 引用，不做 NuGet。
 
-第一個用它的站：[WebDaySurgery](https://github.com/gamer99122/WebDaySurgery)。要看完整範例就開那個專案。
 規則與理由見 `../Docs/NET10-MVC-MSSQL-DPAPI-Spec.md`，這份只講怎麼用。
 
 ---
@@ -58,7 +57,22 @@ WebToolNet 是獨立 repo，**clone 在網站 repo 的隔壁**，兩個資料夾
 
 ## 3. 接上 DB
 
-### 3.1 `Program.cs` 三行
+### 3.1 複製 `Templates/` 的四個檔
+
+`Templates/` 的目錄結構就是網站專案的結構，**照相同相對路徑複製過去，覆蓋 Visual Studio 產生的**：
+
+| `Templates/` 裡的檔案 | 複製到網站專案 | 複製後 |
+| --- | --- | --- |
+| `Program.cs` | `Program.cs` | 三行 `DbStartup` 呼叫已經在裡面，再加你自己的服務註冊、改預設路由 |
+| `appsettings.Development.json` | `appsettings.Development.json` | 不用改。`ConnectionStrings:Test` / `Production` 都是 Windows 驗證、沒密碼，可以進 git。這個站連別的 DB 才改 `Database=` |
+| `Properties/launchSettings.json` | `Properties/launchSettings.json` | 兩個啟動設定「測試DB」「正式DB」。port 要不一樣就改 `applicationUrl` |
+| `Views/Shared/_TestEnv.cshtml` | `Views/Shared/_TestEnv.cshtml` | 不用改。在 layout 或各頁放 `<partial name="_TestEnv" />`，非正式 DB 時畫面出現紅字「測試環境」 |
+
+`appsettings.json` **不能有** `ConnectionStrings`。
+
+### 3.2 `Program.cs` 裡的三行
+
+範本裡 DB 相關的只有這三行，連線邏輯全在 `DbStartup.cs`，各站不要自己重寫：
 
 ```csharp
 using WebToolNet.DBConn;
@@ -66,26 +80,11 @@ using WebToolNet.DBConn;
 if (DbStartup.HandleEncryptDb(args)) return;          // 部署時 <網站>.exe --encrypt-db 走這裡
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
-builder.Services.AddControllersWithViews();
 builder.AddDBConn();                                   // 讀 Database__Target 決定連哪個 DB，註冊 DBConn
 
 WebApplication app = builder.Build();
 app.LogDbTarget();                                     // 啟動 log 印 Target / Server / Database，不含帳密
-// ...其餘照 Visual Studio 範本
-app.Run();
 ```
-
-連線邏輯全在 `DbStartup.cs`，各站不要自己重寫。
-
-### 3.2 從 WebDaySurgery 複製三個檔
-
-| 檔案 | 複製後要改什麼 |
-| --- | --- |
-| `appsettings.Development.json` | 不用改。`ConnectionStrings:Test` / `Production` 都是 Windows 驗證、沒密碼，可以進 git。這個站連別的 DB 才改 `Database=` |
-| `Properties/launchSettings.json` | 只搬 `environmentVariables` 那兩塊到你自己的兩個啟動設定（「測試DB」「正式DB」），port 用你專案原本的 |
-| `Views/Shared/_TestEnv.cshtml` | 不用改。在 layout 或各頁放 `<partial name="_TestEnv" />`，非正式 DB 時畫面出現紅字「測試環境」 |
-
-`appsettings.json` **不能有** `ConnectionStrings`。
 
 ### 3.3 用 DBConn
 
