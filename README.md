@@ -107,7 +107,7 @@ public class FooController : Controller
 | --- | --- | --- | --- |
 | **測試DB**（預設，F5） | `Test` | `appsettings.Development.json`，Windows 驗證 | 紅字「測試環境」 |
 | **正式DB** | `Production` | `appsettings.Development.json`，Windows 驗證 | 沒有紅字，動資料前想清楚 |
-| IIS 正式站 | `Production` | 密文檔 `C:\ProgramData\HIS\db.dat`，SQL 帳號 | 沒有紅字 |
+| IIS 正式站 | `Production` | 密文檔 `C:\WebConfig\db.dat`，SQL 帳號 | 沒有紅字 |
 
 沒設、設錯 → 啟動失敗，訊息會說要去哪裡設。
 
@@ -145,17 +145,17 @@ IIS 管理員：
 dotnet publish -c Release -o C:\inetpub\wwwroot\<網站>
 ```
 
-或 Visual Studio：右鍵專案 → 發佈 → 資料夾。密文檔在 `C:\ProgramData`，發布動不到它。
+或 Visual Studio：右鍵專案 → 發佈 → 資料夾。密文檔在 `C:\WebConfig`，發布動不到它。
 
 ### 5.4 建密文檔（每台機器一次）
 
-正式站的連線字串（含 SQL 帳號密碼）不放 appsettings，而是加密後存成 `C:\ProgramData\HIS\db.dat`。
+正式站的連線字串（含 SQL 帳號密碼）不放 appsettings，而是加密後存成 `C:\WebConfig\db.dat`。
 加密用 Windows 內建的 DPAPI，金鑰綁這台機器：檔案複製到別台就解不開，所以每台正式主機都要在該機器上自己建。
 公司所有站連的 DB 帳密都一樣，所以一台機器只有一個檔、所有站共用：誰先部署誰建，後來的站不用再建，只要讓自己的集區帳號讀得到它。
 
 | 這台機器 | 要做 |
 | --- | --- |
-| 第一次部署 .NET 站（`C:\ProgramData\HIS\db.dat` 還不存在） | 步驟 1、2 |
+| 第一次部署 .NET 站（`C:\WebConfig\db.dat` 還不存在） | 步驟 1、2 |
 | 已經有別的站在跑（檔案已存在） | 只做步驟 3 |
 
 以系統管理員開 PowerShell：
@@ -175,10 +175,10 @@ dotnet publish -c Release -o C:\inetpub\wwwroot\<網站>
 
    看到 `完成。Server=... Database=...` 就是寫好了。檔案已存在會拒絕覆蓋，確定要重建才加 `--force`。
 
-2. **收緊權限，不可略過。** `C:\ProgramData` 底下的檔預設這台機器所有帳號都讀得到，而密文檔只要讀得到就解得開，所以要把繼承來的權限全部拿掉，只留三個：
+2. **收緊權限，不可略過。** 新建的 `C:\WebConfig` 繼承 C 槽的權限，預設這台機器所有帳號都讀得到，而密文檔只要讀得到就解得開，所以要把繼承來的權限全部拿掉，只留三個：
 
    ```powershell
-   icacls "C:\ProgramData\HIS\db.dat" /inheritance:r `
+   icacls "C:\WebConfig\db.dat" /inheritance:r `
      /grant "SYSTEM:(F)" "Administrators:(F)" "IIS AppPool\<網站>:(R)"
    ```
 
@@ -189,13 +189,13 @@ dotnet publish -c Release -o C:\inetpub\wwwroot\<網站>
 3. **之後每加一個站，補它的讀取權限。** 步驟 2 只給了第一個站的集區，新站的集區是另一個帳號（`IIS AppPool\<新站>`），讀不到檔就 500.30。新站做完 5.2、5.3 後跑這一行就好，不要重跑 `--encrypt-db`、也不要再加 `/inheritance:r`（那會把前面的站砍掉），這行只是往現有清單多加一個帳號：
 
    ```powershell
-   icacls "C:\ProgramData\HIS\db.dat" /grant "IIS AppPool\<新站>:(R)"
+   icacls "C:\WebConfig\db.dat" /grant "IIS AppPool\<新站>:(R)"
    ```
 
 隨時可以看目前誰有權限：
 
 ```powershell
-icacls "C:\ProgramData\HIS\db.dat"
+icacls "C:\WebConfig\db.dat"
 ```
 
 正常只會列出 `SYSTEM`、`Administrators`，和這台機器上每個站的 `IIS APPPOOL\<站名>:(R)`；多出 `Users` 之類就是步驟 2 沒做。

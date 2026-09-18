@@ -25,7 +25,7 @@ namespace WebToolNet.Data
         /// 各站集區各自給唯讀權限即可。放在網站目錄外，publish 覆蓋不到它。
         /// 單站要換位置用環境變數 Database__SecretFile 覆蓋，不要改這裡。
         /// </summary>
-        public const string DefaultPath = @"C:\ProgramData\HIS\db.dat";
+        public const string DefaultPath = @"C:\WebConfig\db.dat";
 
         // DPAPI 是 Windows 專屬 API。這個專案本來就只跑在 IIS 上，把平台限制收斂在這個檔案，
         // 呼叫端就不用跟著標 [SupportedOSPlatform]

@@ -104,7 +104,7 @@ v2 保留下來的（都是對的）：不用 EF Core／Dapper／自製加密演
 
 ## 6. 密文檔
 
-- 位置：全公司固定 `C:\ProgramData\HIS\db.dat`（可用 `Database:SecretFile` 覆蓋）。**一台機器一個檔、所有網站共用**：公司 DB 帳密都一樣，`LocalMachine` 密文本來就不綁應用程式，各網站集區各給唯讀即可，不必每站各建一份
+- 位置：全公司固定 `C:\WebConfig\db.dat`（可用 `Database:SecretFile` 覆蓋）。**一台機器一個檔、所有網站共用**：公司 DB 帳密都一樣，`LocalMachine` 密文本來就不綁應用程式，各網站集區各給唯讀即可，不必每站各建一份
 - 內容：`ProtectedData.Protect(UTF8(連線字串), null, LocalMachine)` 的結果轉 Base64，沒有其他欄位
 - `optionalEntropy` 固定 `null`，不自訂金鑰或演算法
 - Base64 只是為了把二進位寫成文字檔，**不是加密**
@@ -122,13 +122,13 @@ DPAPI 只在**啟動時解一次**。不監看檔案、不即時輪替。不得�
 | 一般使用者 | 不得讀寫 |
 
 ```powershell
-icacls "C:\ProgramData\HIS\db.dat" /inheritance:r `
+icacls "C:\WebConfig\db.dat" /inheritance:r `
   /grant "SYSTEM:(F)" "Administrators:(F)" "IIS AppPool\<集區名>:(R)"
 ```
 
-`/inheritance:r` 不可省 —— 不砍掉繼承的話 `C:\ProgramData` 的 `Users:Read` 會讓本機任何帳號讀得到，而 `LocalMachine` 密文任何本機帳號都解得開。
+`/inheritance:r` 不可省 —— 不砍掉繼承的話從 `C:\` 繼承來的 `Users:Read` 會讓本機任何帳號讀得到，而 `LocalMachine` 密文任何本機帳號都解得開。
 
-同一台機器再上一個站，只補 `icacls "C:\ProgramData\HIS\db.dat" /grant "IIS AppPool\<新集區名>:(R)"`，不重打 `/inheritance:r`。
+同一台機器再上一個站，只補 `icacls "C:\WebConfig\db.dat" /grant "IIS AppPool\<新集區名>:(R)"`，不重打 `/inheritance:r`。
 
 替換密文檔時保持同樣嚴格的 ACL，**不得**先產生一個所有人可讀的暫存檔再補權限。密碼輪替由管理人員替換檔案，Web 程式不重寫正式密文。
 
@@ -144,7 +144,7 @@ icacls "C:\ProgramData\HIS\db.dat" /inheritance:r `
 
 `DbSecret` 只有一個常數和兩個 public static 方法：
 
-- **`DefaultPath`** —— `C:\ProgramData\HIS\db.dat`，全公司定案的密文檔路徑。各站 `Program.cs` 直接用它，不各自重寫，路徑就不可能寫歪。
+- **`DefaultPath`** —— `C:\WebConfig\db.dat`，全公司定案的密文檔路徑。各站 `Program.cs` 直接用它，不各自重寫，路徑就不可能寫歪。
 - **`Load(path)`** —— 讀檔、Base64 解碼、DPAPI 解密、用 `SqlConnectionStringBuilder` 驗證語法，回傳連線字串。任何一步不對就丟例外，**不 fallback、不改試其他 scope、不改讀其他來源**。例外訊息帶路徑，但絕不帶檔案內容。
 - **`EncryptInteractive(path, force)`** —— 互動輸入（`Console.ReadKey(intercept: true)`，**不回顯**）、驗證語法、加密寫檔、**立刻讀回來比對**（不一致就刪檔並丟例外）、只印出 Server 和 Database、提醒要跑 `icacls`。既有檔案要 `--force` 才覆蓋。
 
@@ -197,7 +197,7 @@ Log **不得**記錄：完整 `IConfiguration`、連線字串、Password、密�
 
 `.gitignore` 至少要有：`*.dat`／實際採用的密文檔副檔名、`*.user`、`bin`／`obj`。
 
-密文檔放在 `C:\ProgramData` 本來就在工作目錄外，但仍要有規則擋住有人手滑複製進來。
+密文檔放在 `C:\WebConfig` 本來就在工作目錄外，但仍要有規則擋住有人手滑複製進來。
 
 忽略規則**不能**移除已經提交的秘密。發現曾提交秘密，該組帳密即視為已外洩，須停止使用並依流程輪替。
 
