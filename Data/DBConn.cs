@@ -7,7 +7,7 @@ namespace WebToolNet.Data
     public class DBConn
     {
         public bool ExecuteFail = false;
-        public string _ExecuteFailMsg = string.Empty;
+        public string ExecuteFailMsg = string.Empty;
 
         // 連哪個 DB 由 Program.cs 的 Database:Target 決定後注入進來。
         // （.NET Framework 版本是讀 C:\HIS2\DBConfig.xml 自己判斷，那個做法檔案不見時會靜靜
@@ -19,7 +19,7 @@ namespace WebToolNet.Data
 
         }
 
-        public void executesqltrans(string sqlString)
+        public void Execute(string sqlString)
         {
             ////先建立連線的字串，並宣告連線
             //string connectString = "Data Source = localhost; Initial Catalog = BlogTest; Integrated Security = SSPI";
@@ -37,7 +37,7 @@ namespace WebToolNet.Data
             using (SqlConnection sqlConnection = new SqlConnection(connectString))
             {
                 ExecuteFail = false;
-                _ExecuteFailMsg = string.Empty;
+                ExecuteFailMsg = string.Empty;
                 sqlConnection.Open();
                 using (SqlTransaction transaction = sqlConnection.BeginTransaction())
                 {
@@ -52,7 +52,7 @@ namespace WebToolNet.Data
                     {
                         transaction.Rollback();
                         ExecuteFail = true;
-                        _ExecuteFailMsg = ex.Message;
+                        ExecuteFailMsg = ex.Message;
                     }
                 }
             }
@@ -64,7 +64,7 @@ namespace WebToolNet.Data
         /// <param name="SQL">SQL語法</param>
         /// <param name="conn">傳入SqlConnection</param>
         /// <returns>回傳 DataTable</returns>
-        public DataTable executesqldt(string sqlString)
+        public DataTable Query(string sqlString)
         {
             using (SqlConnection connection = new SqlConnection(connectString))
             {
