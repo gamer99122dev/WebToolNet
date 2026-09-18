@@ -113,7 +113,7 @@ public class FooController : Controller
 
 ## 5. 部署到 IIS
 
-照順序做。密文檔一台機器一個檔、所有網站共用，所以 5.1 和 5.4 每台機器只做一次，其餘每個站各做。
+照順序做。密文檔一台機器一個檔、所有網站共用，所以 5.1 和 5.4 的前兩步每台機器只做一次，其餘每個站各做。
 下面以 `C:\inetpub\wwwroot\<網站>` 當發布資料夾的例子，實際放哪裡自己決定，5.2 的實體路徑、5.3 的 publish 目標、5.4 的 cd 改成同一個就好。
 可以先在自己電腦的 IIS 走一遍；`--encrypt-db` 時貼測試 DB 的連線字串，不要在開發機放正式密碼。
 
@@ -149,30 +149,56 @@ dotnet publish -c Release -o C:\inetpub\wwwroot\<網站>
 
 ### 5.4 建密文檔（每台機器一次）
 
-這台機器已經有別的站做過就跳到第 3 步。以系統管理員開 PowerShell：
+正式站的連線字串（含 SQL 帳號密碼）不放 appsettings，而是加密後存成 `C:\ProgramData\HIS\db.dat`。
+加密用 Windows 內建的 DPAPI，金鑰綁這台機器：檔案複製到別台就解不開，所以每台正式主機都要在該機器上自己建。
+公司所有站連的 DB 帳密都一樣，所以一台機器只有一個檔、所有站共用：誰先部署誰建，後來的站不用再建，只要讓自己的集區帳號讀得到它。
 
-1. 跑任一個站的 exe：
+| 這台機器 | 要做 |
+| --- | --- |
+| 第一次部署 .NET 站（`C:\ProgramData\HIS\db.dat` 還不存在） | 步驟 1、2 |
+| 已經有別的站在跑（檔案已存在） | 只做步驟 3 |
+
+以系統管理員開 PowerShell：
+
+1. **產生密文檔。** 進 5.3 發布出來的資料夾，跑該站的 exe 加 `--encrypt-db`。這不會啟動網站，只會問你連線字串、加密寫檔、然後結束；哪個站的 exe 跑都寫同一個檔：
 
    ```powershell
    cd C:\inetpub\wwwroot\<網站>
    .\<網站>.exe --encrypt-db
    ```
 
-   貼上連線字串（畫面不顯示）：`Server=<主機>;Database=<DB>;User ID=<帳號>;Password=<密碼>;Encrypt=True;TrustServerCertificate=True;`
-   要覆蓋既有檔加 `--force`。
+   提示出現後貼上連線字串（畫面不會顯示，貼完按 Enter）：
 
-2. 收緊權限，**不可略過**：
+   ```
+   Server=<主機>;Database=<DB>;User ID=<帳號>;Password=<密碼>;Encrypt=True;TrustServerCertificate=True;
+   ```
+
+   看到 `完成。Server=... Database=...` 就是寫好了。檔案已存在會拒絕覆蓋，確定要重建才加 `--force`。
+
+2. **收緊權限，不可略過。** `C:\ProgramData` 底下的檔預設這台機器所有帳號都讀得到，而密文檔只要讀得到就解得開，所以要把繼承來的權限全部拿掉，只留三個：
 
    ```powershell
    icacls "C:\ProgramData\HIS\db.dat" /inheritance:r `
      /grant "SYSTEM:(F)" "Administrators:(F)" "IIS AppPool\<網站>:(R)"
    ```
 
-3. 之後每加一個站補它的讀取權限：
+   - `/inheritance:r`：移除從上層資料夾繼承的權限（就是拿掉「所有人可讀」）。
+   - `SYSTEM`、`Administrators` 完全控制：之後換密碼、重建檔案要用。
+   - `IIS AppPool\<網站>` 唯讀：IIS 每個應用程式集區自動有一個同名帳號，網站就是用它在跑。`<網站>` 要跟 5.2 建的集區名稱一模一樣，打錯 icacls 會說找不到帳號。
+
+3. **之後每加一個站，補它的讀取權限。** 步驟 2 只給了第一個站的集區，新站的集區是另一個帳號（`IIS AppPool\<新站>`），讀不到檔就 500.30。新站做完 5.2、5.3 後跑這一行就好，不要重跑 `--encrypt-db`、也不要再加 `/inheritance:r`（那會把前面的站砍掉），這行只是往現有清單多加一個帳號：
 
    ```powershell
-   icacls "C:\ProgramData\HIS\db.dat" /grant "IIS AppPool\<網站>:(R)"
+   icacls "C:\ProgramData\HIS\db.dat" /grant "IIS AppPool\<新站>:(R)"
    ```
+
+隨時可以看目前誰有權限：
+
+```powershell
+icacls "C:\ProgramData\HIS\db.dat"
+```
+
+正常只會列出 `SYSTEM`、`Administrators`，和這台機器上每個站的 `IIS APPPOOL\<站名>:(R)`；多出 `Users` 之類就是步驟 2 沒做。
 
 ### 5.5 確認
 
