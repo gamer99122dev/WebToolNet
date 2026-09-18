@@ -1,4 +1,4 @@
-﻿using WebToolNet.DBConn;
+﻿using WebToolNet.Data;
 
 // 新網站的 Program.cs 範本：整個檔覆蓋 Visual Studio 產生的，再加你自己的服務註冊。
 // 部署時用：<網站>.exe --encrypt-db [--force]，一台機器跑一次就好，哪個站的 exe 跑都寫同一個檔
@@ -9,7 +9,7 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-// 連哪個 DB 由 Database__Target 決定，邏輯在 WebToolNet.DBConn.DbStartup（各站共用，不在這裡重寫）；每個 request 一個 DBConn
+// 連哪個 DB 由 Database__Target 決定，邏輯在 WebToolNet.Data.DbStartup（各站共用，不在這裡重寫）；每個 request 一個 DBConn
 builder.AddDBConn();
 
 WebApplication app = builder.Build();

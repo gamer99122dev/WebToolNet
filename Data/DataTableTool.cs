@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using WebToolNet.UtilExtension;
 
-namespace WebToolNet.DBTool
+namespace WebToolNet.Data
 {
     public class DataTableTool
     {

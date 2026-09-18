@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace WebToolNet.DBConn
+namespace WebToolNet.Data
 {
     /// <summary>
     /// 網站啟動時的 DB 接線。每個站的 Program.cs 這段都一樣，所以收在這裡，不要各站複製一份。

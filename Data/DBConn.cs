@@ -2,7 +2,7 @@
 using System.Data;
 using Microsoft.Data.SqlClient;
 
-namespace WebToolNet.DBConn
+namespace WebToolNet.Data
 {
     public class DBConn
     {

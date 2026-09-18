@@ -4,7 +4,7 @@ using System.Security.Cryptography;
 using System.Text;
 using Microsoft.Data.SqlClient;
 
-namespace WebToolNet.DBConn
+namespace WebToolNet.Data
 {
     /// <summary>
     /// 正式站連線字串的加密存放。用 Windows DPAPI，密文檔放在網站目錄外。

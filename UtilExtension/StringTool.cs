@@ -8,7 +8,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
-using WebToolNet.DBTool;
+using WebToolNet.Data;
 using WebToolNet.myDateTime;
 using WebToolNet.myString;
 using WebToolNet.UtilExtension.myDateTime;
