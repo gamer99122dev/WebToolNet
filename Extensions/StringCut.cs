@@ -55,7 +55,7 @@ namespace WebToolNet.Extensions
         /// <param name="StartIndex">字串開始位置</param>
         /// <param name="EndIndex">字串結束位置</param>
         /// <returns></returns>
-        public string SubStrginByte(string InputSrt, int StartIndex, int EndIndex)
+        public string SubStringByte(string InputSrt, int StartIndex, int EndIndex)
         {
             Encoding econd = Encoding.GetEncoding("Big5", new EncoderExceptionFallback(), new DecoderReplacementFallback(""));
             byte[] bytes = econd.GetBytes(InputSrt);

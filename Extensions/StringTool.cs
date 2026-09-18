@@ -99,7 +99,7 @@ namespace WebToolNet.Extensions
 
             StringCut stringCut = new StringCut();
 
-            return stringCut.SubStrginByte(sSource, start, end);
+            return stringCut.SubStringByte(sSource, start, end);
         }
 
 
@@ -440,15 +440,15 @@ namespace WebToolNet.Extensions
             DateTime d = DateTime.Now;
             if (source.Length == 7)
             {
-                d = dc.TWD2DateTime(source, WellFormCheck);
+                d = dc.TWDToDateTime(source, WellFormCheck);
             }
             else if (source.Length == 11)
             {
-                d = dc.TWDHMS2DateTime(source + "00", WellFormCheck);
+                d = dc.TWDHMSToDateTime(source + "00", WellFormCheck);
             }
             else if (source.Length == 13)
             {
-                d = dc.TWDHMS2DateTime(source, WellFormCheck);
+                d = dc.TWDHMSToDateTime(source, WellFormCheck);
             }
 
             return d;
@@ -484,21 +484,21 @@ namespace WebToolNet.Extensions
         public static bool pIsTWDate(this string src, int expectLength = 0)
         {
             // Caller指定預期日期長度
-            // 11104012為錯誤民國日期, 但過得了isTWDate()的檢核
+            // 11104012為錯誤民國日期, 但過得了IsTWDate()的檢核
             if (expectLength > 0 && src.Length != expectLength)
             {
                 return false;
             }
 
             CheckDate _dateChecker = new CheckDate();
-            bool isValid = _dateChecker.isTWDate(src);
+            bool isValid = _dateChecker.IsTWDate(src);
             return isValid;
         }
 
         public static bool pIsTime4(this string src, int expectLength = 0)
         {
             CheckDate _dateChecker = new CheckDate();
-            bool isValid = _dateChecker.isTime4(src);
+            bool isValid = _dateChecker.IsTime4(src);
             return isValid;
         }
 
@@ -508,7 +508,7 @@ namespace WebToolNet.Extensions
         public static bool pIsDate(this string src)
         {
             CheckDate _dateChecker = new CheckDate();
-            bool isValid = _dateChecker.isDate(src);
+            bool isValid = _dateChecker.IsDate(src);
             return isValid;
         }
 
@@ -792,7 +792,7 @@ namespace WebToolNet.Extensions
         {
             CheckID check = new CheckID();
 
-            return check.ckTWID(src) || check.ckForeignID(src);
+            return check.CheckTWID(src) || check.CheckForeignID(src);
         }
 
         public static bool pCheckPID(this string src, bool IsTW = true)
@@ -801,11 +801,11 @@ namespace WebToolNet.Extensions
 
             if (IsTW == true)
             {
-                return check.ckTWID(src);
+                return check.CheckTWID(src);
             }
             else
             {
-                return check.ckForeignID(src);
+                return check.CheckForeignID(src);
             }
         }
 

@@ -29,7 +29,7 @@ namespace WebToolNet.Dates
 
         // 民國年月日(時分秒可有可無) 轉 西元年月日(時分秒可有可無)
         // 傳回字串格式
-        public string TWD2AC_STR(string twd)
+        public string TWDToACString(string twd)
         {
             return "";
         }
@@ -37,10 +37,10 @@ namespace WebToolNet.Dates
 
 
         //傳入民國年月日，傳回西元 DateTime 物件
-        public DateTime TWD2DateTime(string twd, bool WellFormCheck = true)
+        public DateTime TWDToDateTime(string twd, bool WellFormCheck = true)
         {
 
-            if (WellFormCheck && !_cdate.isTWDate(twd))
+            if (WellFormCheck && !_cdate.IsTWDate(twd))
                 return DateTime.Now;
 
             DateTime dt;
@@ -58,7 +58,7 @@ namespace WebToolNet.Dates
         }
 
         //傳入民國年月日，傳回西元 DateTime 物件
-        public string TWD2ChineseTWD(string twd)
+        public string TWDToChineseTWD(string twd)
         {
             string y, m, d;
             y = _strcut.Left(twd, 3);
@@ -73,10 +73,10 @@ namespace WebToolNet.Dates
 
 
         //傳入民國年月日時分秒，傳回西元 DateTime 物件
-        public DateTime TWDHMS2DateTime(string twd, bool WellFormCheck = true)
+        public DateTime TWDHMSToDateTime(string twd, bool WellFormCheck = true)
         {
 
-            if (WellFormCheck && !_cdate.isTWDate(twd))
+            if (WellFormCheck && !_cdate.IsTWDate(twd))
                 return DateTime.Now;
 
             DateTime dt;
@@ -102,10 +102,10 @@ namespace WebToolNet.Dates
         // twd: 出生日
         public string TWDsAge(string twd, bool WellFormCheck = true)
         {
-            if (WellFormCheck && !_cdate.isTWDate(twd))
+            if (WellFormCheck && !_cdate.IsTWDate(twd))
                 return "0";
 
-            DateTime birthday = this.TWD2DateTime(twd, WellFormCheck);
+            DateTime birthday = this.TWDToDateTime(twd, WellFormCheck);
             DateTime today = DateTime.Now;
             TimeSpan ts = new TimeSpan(today.Ticks - birthday.Ticks);
             int age = (int)(ts.Days / _YearOfDays);
@@ -125,11 +125,11 @@ namespace WebToolNet.Dates
         // twd:出生日、baseDate:基準日
         public string TWDsAge(string twd, string baseDate, bool WellFormCheck = true)
         {
-            if (WellFormCheck && (!_cdate.isTWDate(twd) || !_cdate.isTWDate(baseDate)))
+            if (WellFormCheck && (!_cdate.IsTWDate(twd) || !_cdate.IsTWDate(baseDate)))
                 return "0";
 
-            DateTime DTbirthday = this.TWD2DateTime(twd);
-            DateTime DTbaseDate = this.TWD2DateTime(baseDate);
+            DateTime DTbirthday = this.TWDToDateTime(twd);
+            DateTime DTbaseDate = this.TWDToDateTime(baseDate);
 
             if (DTbaseDate < DTbirthday)
                 return "0";
@@ -154,10 +154,10 @@ namespace WebToolNet.Dates
         // 傳回字串格式
         public string TWDsAgeMonth(string twd)
         {
-            if (!_cdate.isTWDate(twd))
+            if (!_cdate.IsTWDate(twd))
                 return "0";
 
-            DateTime birthday = this.TWD2DateTime(twd);
+            DateTime birthday = this.TWDToDateTime(twd);
             TimeSpan ts = new TimeSpan(DateTime.Now.Ticks - birthday.Ticks);
             int result = (int)(ts.Days / _YearOfDays);
 
@@ -176,11 +176,11 @@ namespace WebToolNet.Dates
         // twd:出生日、baseDate:基準日
         public string TWDsAgeMonth(string twd, string baseDate)
         {
-            if (!_cdate.isTWDate(twd) || !_cdate.isTWDate(baseDate))
+            if (!_cdate.IsTWDate(twd) || !_cdate.IsTWDate(baseDate))
                 return "0";
 
-            DateTime DTbirthday = this.TWD2DateTime(twd);
-            DateTime DTbaseDate = this.TWD2DateTime(baseDate);
+            DateTime DTbirthday = this.TWDToDateTime(twd);
+            DateTime DTbaseDate = this.TWDToDateTime(baseDate);
 
             if (DTbaseDate < DTbirthday)
                 return "0";
@@ -198,22 +198,22 @@ namespace WebToolNet.Dates
 
         public int TWDsTodayDiff(string twd, bool WellFormCheck = true)
         {
-            DateTime DTdiff = this.TWDHMS2DateTime(twd + "235959", WellFormCheck);
+            DateTime DTdiff = this.TWDHMSToDateTime(twd + "235959", WellFormCheck);
             TimeSpan ts1 = DTdiff - DateTime.Now;
             return ts1.Days;
         }
 
         public int TWDsDiff(string twde, string twds, bool WellFormCheck = true)
         {
-            DateTime DTS = this.TWDHMS2DateTime(twds + "000000", WellFormCheck);
-            DateTime DTE = this.TWDHMS2DateTime(twde + "235959", WellFormCheck);
+            DateTime DTS = this.TWDHMSToDateTime(twds + "000000", WellFormCheck);
+            DateTime DTE = this.TWDHMSToDateTime(twde + "235959", WellFormCheck);
             TimeSpan ts1 = DTE - DTS;
             return ts1.Days;
         }
 
 
 
-        public string DT2Week(DateTime dt)
+        public string DTToWeek(DateTime dt)
         {
             switch (dt.DayOfWeek)
             {
@@ -243,7 +243,7 @@ namespace WebToolNet.Dates
             }
         }
 
-        public string DT2WeekDay(DateTime dt)
+        public string DTToWeekDay(DateTime dt)
         {
             switch (dt.DayOfWeek)
             {
@@ -315,11 +315,11 @@ namespace WebToolNet.Dates
 
         public string TWDsDateSubtract(string BDate, string EDate)
         {
-            if (!_cdate.isTWDate(BDate) || !_cdate.isTWDate(EDate))
+            if (!_cdate.IsTWDate(BDate) || !_cdate.IsTWDate(EDate))
                 return "0";
 
-            DateTime Date1 = this.TWD2DateTime(BDate);
-            DateTime Date2 = this.TWD2DateTime(EDate);
+            DateTime Date1 = this.TWDToDateTime(BDate);
+            DateTime Date2 = this.TWDToDateTime(EDate);
 
             TimeSpan ts = new TimeSpan();
 
@@ -349,10 +349,10 @@ namespace WebToolNet.Dates
         /// <returns>字串格式的月份數</returns>
         public string TWDsMonths(string twd)
         {
-            if (!_cdate.isTWDate(twd))
+            if (!_cdate.IsTWDate(twd))
                 return "0";
 
-            DateTime birthday = this.TWD2DateTime(twd);
+            DateTime birthday = this.TWDToDateTime(twd);
             TimeSpan ts = new TimeSpan(DateTime.Now.Ticks - birthday.Ticks);
 
             int y = (int)(ts.Days / _YearOfDays);
@@ -381,17 +381,17 @@ namespace WebToolNet.Dates
         /// <returns></returns>
         public Int64 DateTimeSerialNumber(string DTM)
         {
-            if (DTM.Length != 13 || !_cdate.isTWDate(DTM.Substring(0, 7)))
+            if (DTM.Length != 13 || !_cdate.IsTWDate(DTM.Substring(0, 7)))
                 return 0;
 
             DateTime baseDateTime = new DateTime(1970, 1, 1, 0, 0, 0);
             DateTime dt = new DateTime();
             //if (DTM.Length == 7) {
-            //    dt = TWD2DateTime(DTM);
+            //    dt = TWDToDateTime(DTM);
             //} else if (DTM.Length == 11) {
-            //    dt = TWDHMS2DateTime(DTM + "00");
+            //    dt = TWDHMSToDateTime(DTM + "00");
             //} else if (DTM.Length == 13) {
-            dt = TWDHMS2DateTime(DTM);
+            dt = TWDHMSToDateTime(DTM);
             //}
 
             TimeSpan ts = dt.Subtract(baseDateTime);

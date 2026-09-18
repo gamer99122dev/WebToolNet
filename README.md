@@ -12,7 +12,7 @@
 | --- | --- | --- |
 | `WebToolNet.Data` | 連 MSSQL、決定連測試還是正式 DB、正式站密碼加密存放；DataTable／Dictionary 轉 INSERT／DELETE SQL；SQL 字串跳脫 | `DbStartup`、`DBConn`、`DbSecret`、`DataTableTool`、`DBTool`、`SqlEscape` |
 | `WebToolNet.Extensions` | 上百個 `p` 開頭的擴充方法：`pRyyymmdd`、`pSQLValidator`、`pCol`、`pToInt`、`pLeft`…。一檔一類、檔名＝被擴充的型別：`StringTool`（string）、`DateTimeUtil`（DateTime）、`DataRowTool`、`DataTableUtil`、`ListUtil`…；`WebHelper` 有 `HttpContext.GetClientIP()` | 找方法直接 `grep -rn "pXxx" Extensions/` |
-| `WebToolNet.Dates` | 民國／西元換算、算年齡：`TWD2DateTime`、`TWDsAge`；`DateTime` 轉民國／西元各種格式字串 | `DateComputing`、`GenerateDateString` |
+| `WebToolNet.Dates` | 民國／西元換算、算年齡：`TWDToDateTime`、`TWDsAge`；`DateTime` 轉民國／西元各種格式字串 | `DateComputing`、`GenerateDateString` |
 | `WebToolNet.Validation` | 身分證（本國／外籍／居留證）、民國日期、時間格式檢查 | `CheckID`、`CheckDate` |
 
 寫任何工具函式前先 grep 這裡有沒有現成的。擴充方法一律 `p` 開頭：`dateFrom.pRyyymmdd()`、`str.pSQLValidator()`、`row.pCol("欄位名")`。

@@ -11,7 +11,7 @@ namespace WebToolNet.Validation
 {
     public class CheckDate
     {
-        public bool isTWDate(string twd)
+        public bool IsTWDate(string twd)
         {
             int y;
             DateTime dt;
@@ -100,7 +100,7 @@ namespace WebToolNet.Validation
         }
 
         //驗證西元日期格式
-        public bool isDate(string strDate)
+        public bool IsDate(string strDate)
         {
             DateTime dt;
 
@@ -129,7 +129,7 @@ namespace WebToolNet.Validation
 
 
         //驗證時間格式,範圍從000000~235959,若格式符合,傳回True
-        public bool isTime(string time)
+        public bool IsTime(string time)
         {
             if (time.Length != 6)
             {
@@ -148,7 +148,7 @@ namespace WebToolNet.Validation
             }
         }
 
-        public bool isTime4(string time)
+        public bool IsTime4(string time)
         {
             if (time.Length != 4)
             {

@@ -42,7 +42,7 @@ namespace WebToolNet.Validation
         }
 
 
-        public bool checkWhatever(string id)
+        public bool CheckAny(string id)
         {
             /*沒有輸入，回傳 ID 錯誤*/
             if (string.IsNullOrEmpty(id))
@@ -62,19 +62,19 @@ namespace WebToolNet.Validation
 
             Regex regex = new Regex("^[A-Z]{2}");
             if (regex.IsMatch(id))
-                return ckForeignID(id);
+                return CheckForeignID(id);
             else
-                return ckTWID(id);
+                return CheckTWID(id);
 
         }
 
 
-        public bool ckTWID()
+        public bool CheckTWID()
         {
-            return ckTWID(_id);
+            return CheckTWID(_id);
         }
 
-        public bool ckTWID(string id)
+        public bool CheckTWID(string id)
         {
             /*沒有輸入，回傳 ID 錯誤*/
             if (string.IsNullOrEmpty(id))
@@ -138,12 +138,12 @@ namespace WebToolNet.Validation
         }
 
 
-        public bool ckForeignID()
+        public bool CheckForeignID()
         {
-            return ckForeignID(_id);
+            return CheckForeignID(_id);
         }
 
-        public bool ckForeignID(string id)
+        public bool CheckForeignID(string id)
         {
             /*沒有輸入，回傳 ID 錯誤*/
             if (string.IsNullOrEmpty(id))
@@ -196,7 +196,7 @@ namespace WebToolNet.Validation
         /// <summary>
         /// 檢核居留證（舊式：第2碼A-D；新式2021：第2碼8或9）
         /// </summary>
-        public bool ckResidentID(string idNo)
+        public bool CheckResidentID(string idNo)
         {
             if (idNo == null) return false;
             idNo = idNo.ToUpper();
@@ -207,12 +207,12 @@ namespace WebToolNet.Validation
 
             string second = match.Groups[2].Value;
             if ("ABCD".IndexOf(second) >= 0)
-                return ckOldResidentID(match.Groups[1].Value, second, match.Groups[3].Value);
+                return CheckOldResidentID(match.Groups[1].Value, second, match.Groups[3].Value);
             else
-                return ckNewResidentID(match.Groups[1].Value, second + match.Groups[3].Value);
+                return CheckNewResidentID(match.Groups[1].Value, second + match.Groups[3].Value);
         }
 
-        private bool ckOldResidentID(string firstLetter, string secondLetter, string num)
+        private bool CheckOldResidentID(string firstLetter, string secondLetter, string num)
         {
             string alphabet = "ABCDEFGHJKLMNPQRSTUVXYWZIO";
             string transferIdNo =
@@ -229,7 +229,7 @@ namespace WebToolNet.Validation
             return (sum % 10 == 0);
         }
 
-        private bool ckNewResidentID(string firstLetter, string num)
+        private bool CheckNewResidentID(string firstLetter, string num)
         {
             string alphabet = "ABCDEFGHJKLMNPQRSTUVXYWZIO";
             string transferIdNo = $"{(alphabet.IndexOf(firstLetter) + 10)}{num}";

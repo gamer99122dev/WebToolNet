@@ -77,7 +77,7 @@ namespace WebToolNet.Data
 
         }
 
-        public string DictionarytoInsertSQL(Dictionary<string, object> row, string TableName)
+        public string DictionaryToInsertSQL(Dictionary<string, object> row, string TableName)
         {
             string SQL = "Insert Into " + TableName + "(";
 

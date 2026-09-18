@@ -31,7 +31,7 @@ namespace WebToolNet.Data
         /// <param name="orgDT">傳入從 xml 讀出資料的 datatable(有資料)</param>
         /// <param name="schemaDT">傳入 schema(沒帶資料)</param>
         /// <returns> 二邊比對後的輸出 </returns>
-        public DataTable processTableSchema(DataTable orgDT, DataTable schemaDT)
+        public DataTable ProcessTableSchema(DataTable orgDT, DataTable schemaDT)
         {
             string tableName = schemaDT.TableName;
 
