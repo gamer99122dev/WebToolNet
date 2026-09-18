@@ -10,7 +10,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using WebToolNet.Data;
 using WebToolNet.Dates;
-using WebToolNet.myString;
 using WebToolNet.Validation;
 
 namespace WebToolNet.Extensions

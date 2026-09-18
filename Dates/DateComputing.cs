@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using WebToolNet.myString;
+using WebToolNet.Extensions;
 using WebToolNet.Validation;
 
 namespace WebToolNet.Dates
