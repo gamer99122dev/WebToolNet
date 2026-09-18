@@ -14,7 +14,6 @@
 | `WebToolNet.UtilExtension` | 上百個 `p` 開頭的擴充方法：`pRyyymmdd`、`pSQLValidator`、`pCol`、`pToInt`、`pLeft`…；`WebHelper` 有 `HttpContext.GetClientIP()` | `StringTool.cs`（先看這個檔）、`WebHelper.cs` |
 | `WebToolNet.myDateTime` | 民國／西元換算、算年齡：`TWD2DateTime`、`TWDsAge` | `DateComputing` |
 | `WebToolNet.Validation` | 身分證（本國／外籍／居留證）、民國日期、時間格式檢查 | `CheckID`、`CheckDate` |
-| `WebToolNet.HIS2BusinessRule` | BMI、BSA、eGFR 計算；麻醉系統連結 | `Computing`、`ANESCaller` |
 | `WebToolNet.DBTool` | DataTable／Dictionary 轉 INSERT／DELETE SQL | `DataTableTool`、`DBTool` |
 | `WebToolNet.myString` | `Left`／`Right`／`Mid`、依位元組切字串 | `StringCut` |
 
