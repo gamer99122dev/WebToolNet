@@ -9,11 +9,11 @@ namespace WebToolNet.Data
 {
     public class DBTool
     {
-        checkSQLInjection injection;
+        SqlEscape injection;
 
         public DBTool()
         {
-            injection = new checkSQLInjection();
+            injection = new SqlEscape();
         }
 
         public string ISGenerator(object o)

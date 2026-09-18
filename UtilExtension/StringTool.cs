@@ -121,13 +121,13 @@ namespace WebToolNet.UtilExtension
 
         public static string pSQLValidator(this String sSource)
         {
-            checkSQLInjection ckSQL = new checkSQLInjection();
+            SqlEscape ckSQL = new SqlEscape();
             return ckSQL.SQLValidator(sSource);
         }
 
         public static string pRowfilterValidator(this String sSource)
         {
-            checkSQLInjection ckSQL = new checkSQLInjection();
+            SqlEscape ckSQL = new SqlEscape();
             return ckSQL.RowfilterValidator(sSource);
         }
 
@@ -139,7 +139,7 @@ namespace WebToolNet.UtilExtension
         /// <returns></returns>
         public static string pEscapeRowfilter(this String sSource)
         {
-            checkSQLInjection ckSQL = new checkSQLInjection();
+            SqlEscape ckSQL = new SqlEscape();
             return ckSQL.EscapeRowfilter(sSource);
         }
 

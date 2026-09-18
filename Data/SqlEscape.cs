@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 
 
-namespace WebToolNet.UtilExtension
+namespace WebToolNet.Data
 {
-    public class checkSQLInjection
+    public class SqlEscape
     {
         public string SQLValidator(string SQL)
         {
