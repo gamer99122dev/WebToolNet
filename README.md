@@ -10,12 +10,10 @@
 
 | 命名空間 | 用途 | 入口 |
 | --- | --- | --- |
-| `WebToolNet.DBConn` | 連 MSSQL、決定連測試還是正式 DB、正式站密碼加密存放 | `DbStartup`、`DBConn`、`DbSecret` |
-| `WebToolNet.UtilExtension` | 上百個 `p` 開頭的擴充方法：`pRyyymmdd`、`pSQLValidator`、`pCol`、`pToInt`、`pLeft`…；`WebHelper` 有 `HttpContext.GetClientIP()` | `StringTool.cs`（先看這個檔）、`WebHelper.cs` |
-| `WebToolNet.myDateTime` | 民國／西元換算、算年齡：`TWD2DateTime`、`TWDsAge` | `DateComputing` |
+| `WebToolNet.Data` | 連 MSSQL、決定連測試還是正式 DB、正式站密碼加密存放；DataTable／Dictionary 轉 INSERT／DELETE SQL；SQL 字串跳脫 | `DbStartup`、`DBConn`、`DbSecret`、`DataTableTool`、`DBTool`、`SqlEscape` |
+| `WebToolNet.Extensions` | 上百個 `p` 開頭的擴充方法：`pRyyymmdd`、`pSQLValidator`、`pCol`、`pToInt`、`pLeft`…。一檔一類、檔名＝被擴充的型別：`StringTool`（string）、`DateTimeUtil`（DateTime）、`DataRowTool`、`DataTableUtil`、`ListUtil`…；`WebHelper` 有 `HttpContext.GetClientIP()` | 找方法直接 `grep -rn "pXxx" Extensions/` |
+| `WebToolNet.Dates` | 民國／西元換算、算年齡：`TWD2DateTime`、`TWDsAge`；`DateTime` 轉民國／西元各種格式字串 | `DateComputing`、`GenerateDateString` |
 | `WebToolNet.Validation` | 身分證（本國／外籍／居留證）、民國日期、時間格式檢查 | `CheckID`、`CheckDate` |
-| `WebToolNet.DBTool` | DataTable／Dictionary 轉 INSERT／DELETE SQL | `DataTableTool`、`DBTool` |
-| `WebToolNet.myString` | `Left`／`Right`／`Mid`、依位元組切字串 | `StringCut` |
 
 寫任何工具函式前先 grep 這裡有沒有現成的。擴充方法一律 `p` 開頭：`dateFrom.pRyyymmdd()`、`str.pSQLValidator()`、`row.pCol("欄位名")`。
 
@@ -74,7 +72,7 @@ WebToolNet 是獨立 repo，**clone 在網站 repo 的隔壁**，兩個資料夾
 範本裡 DB 相關的只有這三行，連線邏輯全在 `DbStartup.cs`，各站不要自己重寫：
 
 ```csharp
-using WebToolNet.DBConn;
+using WebToolNet.Data;
 
 if (DbStartup.HandleEncryptDb(args)) return;          // 部署時 <網站>.exe --encrypt-db 走這裡
 
@@ -89,26 +87,27 @@ app.LogDbTarget();                                     // 啟動 log 印 Target 
 
 ```csharp
 using System.Data;
-using WebToolNet.UtilExtension;   // pSQLValidator、pCol 這些擴充方法
+using WebToolNet.Data;            // DBConn
+using WebToolNet.Extensions;      // pSQLValidator、pCol 這些擴充方法
 
 public class FooController : Controller
 {
-    private readonly WebToolNet.DBConn.DBConn _db;
-    public FooController(WebToolNet.DBConn.DBConn db) => _db = db;
+    private readonly DBConn _db;
+    public FooController(DBConn db) => _db = db;
 
     public IActionResult Index(string MrNo)
     {
         string sMrNo = MrNo.pSQLValidator();                         // 進 SQL 的字串一律跳脫
         string SQL = "SELECT chName FROM DB_OPD..PatientTbl ";
         SQL += $"\n WHERE chMrNo = '{sMrNo}' ";
-        DataTable dt = _db.executesqldt(SQL);                        // 查詢回 DataTable
+        DataTable dt = _db.Query(SQL);                               // 查詢回 DataTable
         string name = dt.Rows[0].pCol("chName");                     // 取值用 pCol，會自動 Trim
         ...
     }
 }
 ```
 
-`executesqltrans(SQL)` 是有交易的寫入，失敗看 `ExecuteFail` / `_ExecuteFailMsg`。
+`Execute(SQL)` 是有交易的寫入，失敗看 `ExecuteFail` / `ExecuteFailMsg`。
 
 ---
 
