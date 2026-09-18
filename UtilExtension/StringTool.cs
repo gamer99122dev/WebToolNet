@@ -9,9 +9,8 @@ using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using WebToolNet.Data;
-using WebToolNet.myDateTime;
+using WebToolNet.Dates;
 using WebToolNet.myString;
-using WebToolNet.UtilExtension.myDateTime;
 using WebToolNet.Validation;
 
 namespace WebToolNet.UtilExtension

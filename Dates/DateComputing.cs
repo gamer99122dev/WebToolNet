@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using WebToolNet.myString;
 using WebToolNet.Validation;
 
-namespace WebToolNet.myDateTime
+namespace WebToolNet.Dates
 {
     public class DateComputing
     {
