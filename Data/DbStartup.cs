@@ -21,13 +21,22 @@ namespace WebToolNet.Data
     {
         /// <summary>
         /// 部署時用：&lt;網站&gt;.exe --encrypt-db [--force]。放在 Program.cs 第一行，回 true 就直接 return，
-        /// 不建 web host、不連 DB。哪個站的 exe 跑都寫同一個檔（DbSecret.DefaultPath）。
+        /// 不建 web host。哪個站的 exe 跑都寫同一個檔（DbSecret.DefaultPath）。
+        /// 失敗只印訊息、exit code 1，不印堆疊：在部署現場看的人不是工程師。
         /// </summary>
         public static bool HandleEncryptDb(string[] Args)
         {
             if (!Args.Contains("--encrypt-db")) return false;
 
-            DbSecret.EncryptInteractive(DbSecret.DefaultPath, Args.Contains("--force"));
+            try
+            {
+                DbSecret.EncryptInteractive(DbSecret.DefaultPath, Args.Contains("--force"));
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine("失敗：" + ex.Message);
+                Environment.ExitCode = 1;
+            }
             return true;
         }
 

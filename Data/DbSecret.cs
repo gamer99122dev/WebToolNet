@@ -85,7 +85,10 @@ namespace WebToolNet.Data
             return connectString;
         }
 
-        /// <summary>部署時用。互動輸入連線字串（不回顯），加密寫檔，並立刻讀回來驗證。</summary>
+        /// <summary>
+        /// 部署時用。輸入連線字串（人打就不回顯；Deploy/Deploy-IisSite.ps1 用管線餵進來就直接讀 stdin），
+        /// 先真的連一次 DB，再加密寫檔，並立刻讀回來驗證。
+        /// </summary>
         public static void EncryptInteractive(string FilePath, bool Force)
         {
             RequireWindows();
@@ -98,9 +101,21 @@ namespace WebToolNet.Data
             }
 
             Console.WriteLine($"密文檔位置：{FilePath}");
-            Console.WriteLine("請貼上正式站連線字串（畫面不會顯示），按 Enter 結束：");
 
-            string connectString = ReadHidden();
+            string connectString;
+            if (Console.IsInputRedirected)
+            {
+                // 固定當 UTF-8 讀，PowerShell 那邊也固定送 UTF-8；pwsh 7 會多送一個 BOM，要剝掉
+                using (StreamReader stdin = new StreamReader(Console.OpenStandardInput(), Encoding.UTF8, true))
+                {
+                    connectString = (stdin.ReadLine() ?? "").Trim().TrimStart('﻿');
+                }
+            }
+            else
+            {
+                Console.WriteLine("請貼上正式站連線字串（畫面不會顯示），按 Enter 結束：");
+                connectString = ReadHidden();
+            }
             if (string.IsNullOrWhiteSpace(connectString))
             {
                 Console.WriteLine("沒有輸入，取消。");
@@ -108,10 +123,28 @@ namespace WebToolNet.Data
             }
 
             // 先驗語法，免得加密完才發現字串本身是壞的
-            SqlConnectionStringBuilder check = new SqlConnectionStringBuilder(connectString);
+            SqlConnectionStringBuilder check;
+            try
+            {
+                check = new SqlConnectionStringBuilder(connectString);
+            }
+            catch (ArgumentException ex)
+            {
+                throw new InvalidOperationException($"連線字串格式不對：{ex.Message}");
+            }
             if (string.IsNullOrWhiteSpace(check.DataSource) || string.IsNullOrWhiteSpace(check.InitialCatalog))
             {
                 throw new InvalidOperationException("連線字串缺少 Server 或 Database");
+            }
+
+            // 再真的連一次。帳密打錯在這裡就知道，不要等網站 500.30 才從 log 裡找
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectString)) conn.Open();
+            }
+            catch (SqlException ex)
+            {
+                throw new InvalidOperationException($"連不上 DB（Server={check.DataSource} Database={check.InitialCatalog}）：{ex.Message}");
             }
 
             byte[] plain = Encoding.UTF8.GetBytes(connectString);

@@ -154,7 +154,7 @@ icacls "C:\WebConfig\db.dat" /inheritance:r `
 
 `DbStartup` 三個 public static 方法，`Program.cs` 依序呼叫，不自己重寫這段邏輯：
 
-1. `DbStartup.HandleEncryptDb(args)` —— `args` 含 `--encrypt-db` 就呼叫 `EncryptInteractive` 並回 `true`，`Program.cs` 直接 `return`，不建 web host、不連 DB
+1. `DbStartup.HandleEncryptDb(args)` —— `args` 含 `--encrypt-db` 就呼叫 `EncryptInteractive` 並回 `true`，`Program.cs` 直接 `return`，不建 web host。連線字串從 stdin 有東西就讀 stdin（給 Deploy 工具用），否則互動輸入不回顯；失敗只印訊息、exit code 1
 2. `builder.AddDBConn()` —— 讀 `Database:Target`，用 if 分派；`Test` 或 `Production`+Development 讀 `ConnectionStrings:{Target}`，`Production` 其他情況讀 DPAPI，其餘丟例外，訊息要說得出「該去哪裡設什麼」。用具名的 local function `CreateDbConn(IServiceProvider)` 把 `new DBConn { connectString = ... }` 註冊為 Scoped；不用 lambda、switch expression 或 expression-bodied 成員（專案慣例：不用箭頭寫法）
 3. `app.LogDbTarget()` —— `builder.Build()` 之後記一行啟動 Log：Target、Server、Catalog（用 `SqlConnectionStringBuilder` 取，**不含密碼**）
 
@@ -223,7 +223,7 @@ Log **不得**記錄：完整 `IConfiguration`、連線字串、Password、密�
 | 替換密文並重新啟動 | 載入新值 |
 | 發布產物檢查 | 目錄下搜不到任何密碼；`appsettings.json` 沒有 `ConnectionStrings` |
 
-`--encrypt-db` 的「寫檔後立刻讀回比對」就是 DPAPI 往返的檢查，而且跑在真正重要的時機（部署當下），不另外開測試專案。
+`--encrypt-db` 加密前先 `SqlConnection.Open()` 一次（帳密錯在部署現場就擋下，不寫檔），寫檔後立刻讀回比對就是 DPAPI 往返的檢查；兩者都跑在真正重要的時機（部署當下），不另外開測試專案。
 
 IIS 身分、ACL 與 SQL 憑證必須實機驗證，不能只靠單元測試。
 
