@@ -1955,25 +1955,9 @@ namespace WebToolNet.Extensions
     }
     #endregion
 
-    #region ComboBox Item Value Setting
-    public class CboDataList
-    {
-        public string cbo_Name { get; set; }
-        public string cbo_Value { get; set; }
-    }
-    #endregion
-
     #region List
     public static class ListUtil
     {
-        public static void pAdd(this List<CboDataList> listObj, string strName, string strValue)
-        {
-            var cdList = new CboDataList();
-            cdList.cbo_Name = strName;
-            cdList.cbo_Value = strValue;
-
-            listObj.Add(cdList);
-        }
         public static void pAddMany<T>(this List<T> list, params T[] elements)
         {
             list.AddRange(elements);
