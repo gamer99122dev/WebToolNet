@@ -9,7 +9,7 @@ WebToolNet 是獨立 repo，clone 在網站 repo 的隔壁：
 
 ```
 任意資料夾\
-├── WebToolNet\        ← git clone https://github.com/gamer99122dev/WebToolNet.git
+├── WebToolNet\        ← git clone 公司版控上的 WebToolNet
 └── <網站>\            ← 你的網站 repo
 ```
 
