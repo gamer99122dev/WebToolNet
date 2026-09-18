@@ -92,7 +92,12 @@ public class FooController : Controller
 | `WebToolNet.Dates` | 民國／西元換算、算年齡：`DateComputing`、`GenerateDateString` |
 | `WebToolNet.Validation` | 身分證、民國日期、時間格式檢查：`CheckID`、`CheckDate` |
 
-寫任何工具函式前先 `grep -rn "pXxx" Extensions/` 看有沒有現成的。
+慣例：
+
+- 寫任何工具函式前先 `grep -rn "pXxx" Extensions/` 看有沒有現成的；一律用 `p` 開頭的擴充方法（`dt.pRyyymmdd()`、`str.pSQLValidator()`），不要 `new` 底層物件。
+- SQL 不參數化，進 SQL 的字串一律 `pSQLValidator()` 跳脫。
+- 取值一律 `row.pCol("欄位名")`（會自動 Trim），不要 `row["欄位名"].ToString()`。
+- DB 存的日期是民國：7 碼 `1150818`、11 碼含時分 `11508180000`。字串比較就是時序，可以直接 `BETWEEN`；但長度不同要先補 `0000`／`2359` 再比，否則 `'11508122359' > '1150812'`，當天資料會被濾掉。進 SQL 前一律 `pRyyymmdd()` 轉。
 
 ## 4. 測試／正式 DB
 
