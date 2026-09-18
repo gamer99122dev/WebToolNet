@@ -1,7 +1,7 @@
 using System.Net;
 using Microsoft.AspNetCore.Http;
 
-namespace WebToolNet.UtilExtension
+namespace WebToolNet.Extensions
 {
     public static class WebHelper
     {

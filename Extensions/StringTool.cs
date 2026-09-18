@@ -13,7 +13,7 @@ using WebToolNet.Dates;
 using WebToolNet.myString;
 using WebToolNet.Validation;
 
-namespace WebToolNet.UtilExtension
+namespace WebToolNet.Extensions
 {
     public enum TimeDiffType
     {
